@@ -8,41 +8,47 @@ app.use(cors());
 app.use(bodyParser.json());
 app.post("/generatepdf", async (req, res) => {
   try {
+    const formate = req.body.PageSize;
+    const orientation= req.body.orientation;
     const url = req.body.url;
     console.log(url);
-    const browser = await puppeteer.launch({ headless: 'new' });
+    const browser = await puppeteer.launch({ headless: "new" });
     console.log("browser opend");
     const page = await browser.newPage();
-    console.log("new page opend");
-    await page.goto(url, { waitUntil: "networkidle2"});
-    console.log("page loaded");
-    await page.evaluate(async () => {
-        await new Promise((resolve, reject) => {
-          let totalHeight = 0;
-          const distance = 100; // Distance to scroll in each step
-          const maxScrolls = 1000; // Maximum number of scrolls to prevent infinite scrolling
-    
-          const timer = setInterval(() => {
-            const scrollHeight = document.body.scrollHeight;
-            window.scrollBy(0, distance);
-            totalHeight += distance;
-    
-            if (totalHeight >= scrollHeight || totalHeight >= maxScrolls * distance) {
-              clearInterval(timer);
-              resolve();
-            }
-          }, 100);
-        });
+    await page.goto(url, { waitUntil: "networkidle2" });
+    const fullscroll = await page.evaluate(async () => {
+      await new Promise((resolve, reject) => {
+        const distance = 100;
+        const maxScrolls = 1000;
+        let scrolls = 0;
+        const timer = setInterval(() => {
+          window.scrollBy(0, distance);
+          scrolls++;
+          if (
+            scrolls >= maxScrolls ||
+            window.innerHeight + window.scrollY >= document.body.offsetHeight
+          ) {
+            clearInterval(timer);
+            resolve();
+          }
+        }, 100);
       });
-    const pdfgenerate = await page.pdf({printBackground: true, format: "A4" });
-    console.log("pdf generated");
+    });
+    if (orientation==="landscape") {
+      return landtrue=true;
+    }
+    const pdfgenerate = await page.pdf({
+      printBackground: true,
+      landscape: landtrue,
+      format:`${formate}`
+      
+    });
     await browser.close();
-    res.setHeader("Content-Type", "application/pdf");
-    res.setHeader("Content-Disposition", "attachment; filename=output.pdf");
     res.send(pdfgenerate);
+    console.log("pdf generated");
   } catch (error) {
     console.log(error);
-    res.status(500).send('Error generating PDF');
+    res.status(500).send("Error generating PDF");
   }
 });
 
