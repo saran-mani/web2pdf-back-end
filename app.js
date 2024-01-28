@@ -27,20 +27,19 @@ app.post("/generatepdf", async (req, res) => {
             window.scrollBy(0, distance);
             totalHeight += distance;
     
-            // Stop scrolling if reached the bottom of the page or exceeded maximum scrolls
             if (totalHeight >= scrollHeight || totalHeight >= maxScrolls * distance) {
               clearInterval(timer);
               resolve();
             }
-          }, 100); // Interval between scrolls in milliseconds
+          }, 100);
         });
       });
-    const pdfgenerate = await page.pdf({ path:"output.pdf",printBackground: true, format: "A4" });
+    const pdfgenerate = await page.pdf({printBackground: true, format: "A4" });
     console.log("pdf generated");
     await browser.close();
-    // res.setHeader("Content-Type", "application/pdf");
-    // res.setHeader("Content-Disposition", "attachment; filename=output.pdf");
-    // res.send(pdfgenerate);
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", "attachment; filename=output.pdf");
+    res.send(pdfgenerate);
   } catch (error) {
     console.log(error);
     res.status(500).send('Error generating PDF');
