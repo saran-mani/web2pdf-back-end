@@ -6,6 +6,7 @@ module.exports.generatepdf = async (req, res) => {
     const orientation = req.body.orientation;
     const url = req.body.url;
     const browser = await puppeteer.launch({
+      timeout: 60000,
       headless: "new",
       args:[
         "--disable-setuid-sandbox",
@@ -17,6 +18,7 @@ module.exports.generatepdf = async (req, res) => {
         process.env.NODE_ENV === "production"
           ? process.env.PUPPETEER_EXECUTABLE_PATH
           : puppeteer.executablePath(),
+
     });
     const page = await browser.newPage();
     await page.goto(url, { waitUntil: "networkidle2" });
