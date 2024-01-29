@@ -6,7 +6,7 @@ module.exports.generatepdf = async (req, res) => {
     const orientation = req.body.orientation;
     const url = req.body.url;
     const browser = await puppeteer.launch({
-      timeout: 60000,
+      timeout: 120000,
       headless: "new",
       args:[
         "--disable-setuid-sandbox",
