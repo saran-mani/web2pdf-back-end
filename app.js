@@ -6,6 +6,9 @@ const app = express();
 
 app.use(cors());
 app.use(bodyParser.json());
+app.get("/",(req,res)=>{
+  res.send(`<h1>Home</h1>`)
+})
 app.use("/generatepdf",appRoutes);
 
 app.listen(3000, () => {
