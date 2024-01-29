@@ -5,7 +5,7 @@ ENV PUPPETEER_SKIP_DOWNLOAD=true \
 
 WORKDIR /usr/src/app
 
-COPY pakage*.json ./
+COPY package*.json ./
 RUN npm ci
 COPY . .
 CMD ["node","app.js"]
