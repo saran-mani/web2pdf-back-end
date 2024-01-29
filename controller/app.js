@@ -1,11 +1,23 @@
 const puppeteer = require("puppeteer");
-
+require("dotenv").config
 module.exports.generatepdf = async (req, res) => {
   try {
     const formate = req.body.pageSize;
     const orientation = req.body.orientation;
     const url = req.body.url;
-    const browser = await puppeteer.launch({ headless: "new" });
+    const browser = await puppeteer.launch({
+      headless: "new",
+      args:[
+        "--disable-setuid-sandbox",
+        "--no-sandbox",
+        "--single-process",
+        "--no-zygote"
+      ],
+      executablePath:
+        process.env.NODE_ENV === "production"
+          ? process.env.PUPPETEER_EXECUTABLE_PATH
+          : puppeteer.executablePath(),
+    });
     const page = await browser.newPage();
     await page.goto(url, { waitUntil: "networkidle2" });
     const fullscroll = await page.evaluate(async () => {
