@@ -3,7 +3,7 @@ const cors = require("cors");
 const appRoutes=require("./routes/app")
 const bodyParser = require("body-parser");
 const app = express();
-
+const functions=require("firebase-functions")
 app.use(cors());
 app.use(bodyParser.json());
 app.get("/",(req,res)=>{
@@ -14,3 +14,5 @@ app.use("/generatepdf",appRoutes);
 app.listen(3000, () => {
   console.log("Server listen on port 3000");
 });
+
+exports.api=functions.https.onRequest(app)
